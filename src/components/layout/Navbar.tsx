@@ -19,13 +19,10 @@ import {
   Clock,
   ShieldAlert,
   Globe,
-  Wallet,
-  ExternalLink,
   Archive,
   GitBranch,
   Calendar
 } from 'lucide-react';
-import { QUAI_CONFIG } from '../../blockchain/quaiConfig';
 
 export const Navbar: React.FC = () => {
   const {
@@ -39,24 +36,17 @@ export const Navbar: React.FC = () => {
     setIsGlobalSearchOpen,
     setIsTamperModalOpen,
     isTampered,
-    resetDemoChain,
-    appMode,
-    setAppMode,
-    walletState,
-    connectWallet,
-    disconnectWallet
+    resetDemoChain
   } = useTraceLock();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMoreOpen, setIsMoreOpen] = useState(false);
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
-  const walletRef = useRef<HTMLDivElement>(null);
 
   const unreadNotifs = notifications.filter(n => !n.read).length;
   const unresolvedAlerts = alerts.filter(a => a.status === 'new' || a.status === 'investigating').length;
@@ -71,9 +61,6 @@ export const Navbar: React.FC = () => {
       }
       if (moreRef.current && !moreRef.current.contains(e.target as Node)) {
         setIsMoreOpen(false);
-      }
-      if (walletRef.current && !walletRef.current.contains(e.target as Node)) {
-        setIsWalletModalOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -240,103 +227,6 @@ export const Navbar: React.FC = () => {
           {/* RIGHT: Framed Action Controls & Indicators */}
           <div className="flex items-center space-x-2 shrink-0">
             
-            {/* Framed Mode Switcher (DEMO / QUAI TESTNET) */}
-            <div className="hidden sm:flex items-center rounded-lg bg-[#111F36] border border-slate-700/90 p-0.5 text-[10px] font-bold shrink-0">
-              <button
-                onClick={() => setAppMode('demo')}
-                className={`px-2 py-1 rounded transition-all cursor-pointer ${
-                  appMode === 'demo'
-                    ? 'bg-blue-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Run in deterministic demo mode with instant simulated transactions."
-              >
-                DEMO
-              </button>
-              <button
-                onClick={() => setAppMode('quai_testnet')}
-                className={`px-2 py-1 rounded transition-all cursor-pointer ${
-                  appMode === 'quai_testnet'
-                    ? 'bg-indigo-600 text-white shadow-xs'
-                    : 'text-slate-400 hover:text-slate-200'
-                }`}
-                title="Connect live to Quai Orchard Testnet (Cyprus-1)."
-              >
-                QUAI TESTNET
-              </button>
-            </div>
-
-            {/* Framed Quai Wallet Button */}
-            <div className="relative shrink-0" ref={walletRef}>
-              {walletState.isConnected ? (
-                <button
-                  onClick={() => setIsWalletModalOpen(!isWalletModalOpen)}
-                  className="flex items-center space-x-1.5 px-2.5 py-1 text-xs font-mono rounded-lg bg-indigo-950/70 border border-indigo-500/40 text-emerald-400 hover:bg-indigo-900/80 transition-colors cursor-pointer shrink-0"
-                  title="Connected to Quai Orchard Testnet"
-                >
-                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>{walletState.address?.slice(0, 6)}...{walletState.address?.slice(-4)}</span>
-                </button>
-              ) : (
-                <button
-                  onClick={connectWallet}
-                  className="flex items-center space-x-1 px-2.5 py-1 text-xs font-semibold rounded-lg bg-indigo-950/60 border border-indigo-500/40 text-indigo-300 hover:bg-indigo-900/80 hover:text-white transition-colors cursor-pointer shrink-0"
-                  title="Connect Pelagus or Web3 Wallet"
-                >
-                  <Wallet className="h-3.5 w-3.5 text-indigo-400" />
-                  <span className="hidden md:inline">Connect Quai</span>
-                </button>
-              )}
-
-              {/* Wallet Modal Popover */}
-              {isWalletModalOpen && walletState.isConnected && (
-                <div className="absolute right-0 mt-2 w-72 bg-white text-slate-800 rounded-xl shadow-2xl border border-slate-200 py-3 px-4 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                  <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                    <span className="text-xs font-bold text-slate-900">Quai Wallet</span>
-                    <span className="text-[10px] font-semibold bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded border border-emerald-200">
-                      Connected
-                    </span>
-                  </div>
-
-                  <div className="py-2.5 space-y-2 text-xs">
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-semibold uppercase">Account</span>
-                      <span className="font-mono text-slate-800 font-bold break-all text-[11px]">{walletState.address}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-semibold uppercase">Network</span>
-                      <span className="text-slate-800 font-semibold">{QUAI_CONFIG.networkName} (Cyprus-1)</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] text-slate-400 block font-semibold uppercase">Chain ID</span>
-                      <span className="font-mono text-slate-800 font-semibold">15000 (0x3a98)</span>
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <a
-                      href={`${QUAI_CONFIG.explorerUrl}/address/${walletState.address}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-[11px] text-blue-600 hover:underline flex items-center space-x-1"
-                    >
-                      <span>View in Explorer</span>
-                      <ExternalLink className="h-3 w-3" />
-                    </a>
-                    <button
-                      onClick={() => {
-                        disconnectWallet();
-                        setIsWalletModalOpen(false);
-                      }}
-                      className="text-[11px] text-rose-600 hover:text-rose-800 font-semibold cursor-pointer"
-                    >
-                      Disconnect
-                    </button>
-                  </div>
-                </div>
-              )}
-            </div>
-
             {/* Framed Demo Lab Button */}
             <button
               onClick={() => setActivePage('demolab')}
@@ -507,17 +397,6 @@ export const Navbar: React.FC = () => {
       {/* Mobile Menu Drawer */}
       {isMobileMenuOpen && (
         <div className="lg:hidden border-t border-slate-800 bg-[#0B1528] px-4 pt-2 pb-4 space-y-1 max-h-[80vh] overflow-y-auto">
-          <div className="py-2 flex items-center justify-between border-b border-slate-800 mb-2">
-            <span className="text-xs font-medium text-slate-400">Mode:</span>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setAppMode(appMode === 'demo' ? 'quai_testnet' : 'demo')}
-                className="text-xs font-bold px-2.5 py-1 rounded bg-indigo-900 text-indigo-200 border border-indigo-600"
-              >
-                {appMode === 'demo' ? 'SWITCH TO QUAI TESTNET' : 'SWITCH TO DEMO'}
-              </button>
-            </div>
-          </div>
           {allMobileNavItems.map((item) => (
             <button
               key={item.id}
