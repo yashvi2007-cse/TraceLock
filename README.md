@@ -6,6 +6,9 @@
 
 🌐 **Live Demo:** https://trace-lock.vercel.app
 
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/807f26da-0d35-4633-a9f0-4450a8f6a8f8" />
+
+
 ---
 
 ## 🛡️ Overview
