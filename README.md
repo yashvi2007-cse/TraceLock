@@ -54,7 +54,7 @@ The objective is to establish a more trustworthy evidence trail that can support
 
 ### Core concept
 
-**Collect → Protect → Verify → Investigate**
+**Collect → Protect → Verify → Investigate** 
 
 ---
 
@@ -276,6 +276,5 @@ It was developed as an innovation-driven project to explore how digital evidence
 ---
 
 **TraceLock — Evidence Integrity & Tamper-Evident System Activity Platform**
-
-
+ 
 
